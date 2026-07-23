@@ -30,8 +30,8 @@
 
 /* NEW CSS HEART LOADER */
 .loader-heart {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 90px;
   position: relative;
   animation: pulse 1.5s ease-in-out infinite;
   margin-bottom: 24px;
@@ -40,27 +40,36 @@
 .loader-heart::before,
 .loader-heart::after {
   content: '';
+  width: 52px;
+  height: 80px;
   position: absolute;
-  width: 60px;
-  height: 90px;
-  background: linear-gradient(45deg, #ff00ff, #a855f7);
-  border-radius: 60px 60px 0 0;
-  transform-origin: 0 100%;
+  background: linear-gradient(135deg, #ff00ff, #a855f7);
+  border-radius: 50px 50px 0 0;
   box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899;
 }
 
-.loader-heart::before { left: 60px; transform: rotate(-45deg); }
-.loader-heart::after { left: 0; transform: rotate(45deg); }
+.loader-heart::before {
+  left: 50px;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.loader-heart::after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
 
 .loader-heart span {
   position: absolute;
-  top: 50%;
-  left: 10%;
-  width: 80%;
-  height: 2px;
+  top: 45px;
+  left: 15px;
+  width: 70px;
+  height: 3px;
   background: #00ffff;
-  box-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 15px #00ffff;
   z-index: 2;
+  border-radius: 2px;
   animation: ecg 1.5s linear infinite;
 }
 
