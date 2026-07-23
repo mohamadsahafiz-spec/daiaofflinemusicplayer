@@ -8,12 +8,12 @@
   "theme_color": "#7c3aed",
   "orientation": "portrait",
   "splash_screens": [
-  {
-    "src": "splash-v2.png",
-    "sizes": "1170x2532",
-    "type": "image/png"
-  }
-]
+    {
+      "src": "splash-v2.png",
+      "sizes": "1170x2532",
+      "type": "image/png"
+    }
+  ],
   "icons": [
     {
       "src": "icon-180.png",
