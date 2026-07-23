@@ -12,6 +12,39 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
 <style>
+#loading {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+#loading img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px #8b5cf6);
+}
+#loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.pulse {
+  width: 220px;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  margin-top: 24px;
+  border-radius: 2px;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scaleX(0.3); opacity: 0.5; }
+ 50% { transform: scaleX(1); opacity: 1; }
+}
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   :root {
     --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424;
@@ -67,7 +100,8 @@
 <body>
 
 <div id="loading">
-  <img src="splash.png" style="width:100%; height:100%; object-fit:cover;">
+  <img src="splash.png" alt="Daia">
+  <div class="pulse"></div>
 </div>
 
 <div class="container">
@@ -214,6 +248,11 @@ function toggleTheme() {
   document.body.setAttribute('data-theme', theme);
   localStorage.setItem('daia_theme', theme);
 }
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hide');
+  }, 1500); // 1.5s splash, then hide
+});
 </script>
 </body>
 </html>
