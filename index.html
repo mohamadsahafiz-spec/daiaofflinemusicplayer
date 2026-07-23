@@ -59,12 +59,34 @@
  .container { max-width: 1100px; margin: auto; padding: 24px; }
 
   /* Loading Screen */
-  #loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; animation: fadeOut 0.6s 3s forwards; }
-  #loading.logo { font-size:64px; animation: heartbeat 1s infinite; }
-  #loading h1 { font-size:40px; font-weight:900; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: pulse 2s infinite; }
-  @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  @keyframes fadeOut { to{opacity:0; visibility:hidden} }
+#loading {
+  position: fixed; inset: 0;
+  background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s;
+}
+.logo {
+  width: 180px; height: 180px;
+  filter: drop-shadow(0 0 30px #8b5cf6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+ 0%,100% { transform: scale(1); opacity: 0.9; }
+ 50% { transform: scale(1.08); opacity: 1; }
+}
+.pulse {
+  width: 200px; height: 3px;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  margin-top: 30px; border-radius: 2px;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%,100% { transform: scaleX(0.3); }
+ 50% { transform: scaleX(1); }
+}
+#loading.hide { opacity: 0; pointer-events: none; }
 
   header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.4); }
   [data-theme="light"] header { background: rgba(255,255,255,0.6); }
@@ -100,7 +122,7 @@
 <body>
 
 <div id="loading">
-  <img src="splash.png" alt="Daia">
+  <img src="logo.png" alt="Daia Logo" class="logo">
   <div class="pulse"></div>
 </div>
 
