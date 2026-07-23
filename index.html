@@ -23,28 +23,71 @@
   z-index: 9999;
   transition: opacity 0.5s ease;
 }
-#loading img {
-  width: 220px;
-  height: 220px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 20px #8b5cf6);
-}
 #loading.hide {
   opacity: 0;
   pointer-events: none;
 }
+
+/* NEW CSS HEART LOADER */
+.loader-heart {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-bottom: 24px;
+}
+
+.loader-heart::before,
+.loader-heart::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 90px;
+  background: linear-gradient(45deg, #ff00ff, #a855f7);
+  border-radius: 60px 60px 0 0;
+  transform-origin: 0 100%;
+  box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899;
+}
+
+.loader-heart::before { left: 60px; transform: rotate(-45deg); }
+.loader-heart::after { left: 0; transform: rotate(45deg); }
+
+.loader-heart span {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: #00ffff;
+  box-shadow: 0 0 10px #00ffff;
+  z-index: 2;
+  animation: ecg 1.5s linear infinite;
+}
+
 .pulse {
   width: 220px;
   height: 4px;
   background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  margin-top: 24px;
   border-radius: 2px;
-  animation: heartbeat 1.2s ease-in-out infinite;
+  animation: heartbeat-bar 1.2s ease-in-out infinite;
 }
-@keyframes heartbeat {
+
+@keyframes pulse {
+ 0%, 100% { transform: scale(1); }
+ 50% { transform: scale(1.1); }
+}
+
+@keyframes heartbeat-bar {
   0%, 100% { transform: scaleX(0.3); opacity: 0.5; }
  50% { transform: scaleX(1); opacity: 1; }
 }
+
+@keyframes ecg {
+ 0% { opacity: 0.3; }
+ 50% { opacity: 1; }
+ 100% { opacity: 0.3; }
+}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   :root {
     --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424;
@@ -56,15 +99,7 @@
   }
     * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Inter', system-ui; background: var(--bg); color: var(--text); margin:0; padding-bottom:90px; background-image: var(--gradient); background-attachment: fixed; transition: all 0.3s ease; overflow-x:hidden; }
- .container { max-width: 1100px; margin: auto; padding: 24px; }
-
-  /* Loading Screen */
-  #loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; animation: fadeOut 0.6s 3s forwards; }
-  #loading.logo { font-size:64px; animation: heartbeat 1s infinite; }
-  #loading h1 { font-size:40px; font-weight:900; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: pulse 2s infinite; }
-  @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  @keyframes fadeOut { to{opacity:0; visibility:hidden} }
+.container { max-width: 1100px; margin: auto; padding: 24px; }
 
   header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.4); }
   [data-theme="light"] header { background: rgba(255,255,255,0.6); }
@@ -78,29 +113,30 @@
   button.icon:hover { color:var(--text); transform: scale(1.1); }
   button.icon.active { color:var(--accent); }
 
- .card { background: rgba(18,18,18,0.6); backdrop-filter: blur(20px); padding:20px; border-radius:16px; margin:20px 0; border:1px solid var(--border); transition: all 0.3s; animation: slideUp 0.5s ease; }
+.card { background: rgba(18,18,18,0.6); backdrop-filter: blur(20px); padding:20px; border-radius:16px; margin:20px 0; border:1px solid var(--border); transition: all 0.3s; animation: slideUp 0.5s ease; }
   @keyframes slideUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
- .card:hover { background: rgba(31,31,31,0.8); transform: translateY(-2px); }
+.card:hover { background: rgba(31,31,31,0.8); transform: translateY(-2px); }
 
   input, select, textarea { padding:14px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--text); font-size:14px; outline:none; width:100%; }
   input:focus, textarea:focus { border-color: var(--accent); }
 
- .song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; height:64px; transition: all 0.2s; }
- .song:hover { background:var(--card-hover); transform: translateX(8px); }
- .song.active { background: rgba(124,58,237,0.2); box-shadow:0 0 15px rgba(124,58,237,0.3); }
- .cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; height:64px; transition: all 0.2s; }
+.song:hover { background:var(--card-hover); transform: translateX(8px); }
+.song.active { background: rgba(124,58,237,0.2); box-shadow:0 0 15px rgba(124,58,237,0.3); }
+.cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 
- .player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.85); backdrop-filter: blur(30px); padding:10px 20px; border-top:1px solid var(--border); height:80px; z-index:10; }
- .progress { width:100%; height:4px; background:#535353; border-radius:4px; cursor:pointer; position:absolute; top:0; left:0; }
- .progress-bar { height:100%; background:var(--accent); width:0%; border-radius:4px; transition: width 0.1s linear; }
- .lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
- .lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
+.player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.85); backdrop-filter: blur(30px); padding:10px 20px; border-top:1px solid var(--border); height:80px; z-index:10; }
+.progress { width:100%; height:4px; background:#535353; border-radius:4px; cursor:pointer; position:absolute; top:0; left:0; }
+.progress-bar { height:100%; background:var(--accent); width:0%; border-radius:4px; transition: width 0.1s linear; }
+.lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
+.lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
 </style>
 </head>
 <body>
 
 <div id="loading">
-<img src="heart.png" class="logo" alt="Daia">
+  <!-- CHANGED: NO IMG TAG ANYMORE -->
+  <div class="loader-heart"><span></span></div>
   <div class="pulse"></div>
 </div>
 
