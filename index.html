@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12,54 +12,116 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
 <style>
-#loading { position: fixed; inset: 0; background: #0a0a0a; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; transition: opacity 0.5s ease; }
+#loading {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
 #loading.hide { opacity: 0; pointer-events: none; }
-.loader-heart { width: 100px; height: 90px; position: relative; animation: pulse 1.5s ease-in-out infinite; margin-bottom: 10px; }
-.loader-heart::before,.loader-heart::after { content: ''; width: 52px; height: 80px; position: absolute; background: linear-gradient(135deg, #ff00ff, #a855f7); border-radius: 50px 50px 0 0; box-shadow: 0 0 30px #a855f7; }
+
+.loader-heart {
+  width: 100px;
+  height: 90px;
+  position: relative;
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+.loader-heart::before,
+.loader-heart::after {
+  content: '';
+  width: 52px;
+  height: 80px;
+  position: absolute;
+  background: linear-gradient(135deg, #ff00ff, #a855f7);
+  border-radius: 50px 50px 0 0;
+  box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899;
+}
 .loader-heart::before { left: 50px; transform: rotate(-45deg); transform-origin: 0 100%; }
 .loader-heart::after { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
-.loading-text { font-size: 28px; font-weight: 900; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; }
-.pulse { width: 220px; height: 4px; background: linear-gradient(90deg, #8b5cf6, #06b6d4); border-radius: 2px; margin-top: 20px; animation: heartbeat-bar 1.2s ease-in-out infinite; }
+
+.loading-text {
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 3px;
+  animation: pulse 2s infinite;
+}
+
+.pulse {
+  width: 220px;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  border-radius: 2px;
+  margin-top: 20px;
+  animation: heartbeat-bar 1.2s ease-in-out infinite;
+}
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-@keyframes heartbeat-bar { 0%, 100% { transform: scaleX(0.3); opacity: 0.5; } 50% { transform: scaleX(1); opacity: 1; }
+@keyframes heartbeat-bar { 0%, 100% { transform: scaleX(0.3); opacity: 0.5; } 50% { transform: scaleX(1); opacity: 1; } }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-:root { --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424; }
-[data-theme="light"] { --bg:#f8f8f8; --card:#ffffff; --card-hover:#f0f0f0; --text:#000; --muted:#6a6a6a; --border:#e0e0e0; }
-* { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Inter', system-ui; background: var(--bg); color: var(--text); margin:0; padding-bottom:90px; transition: all 0.3s ease; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  :root {
+    --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424;
+    --gradient: linear-gradient(180deg, rgba(124,58,237,0.15) 0%, transparent 100%);
+  }
+  [data-theme="light"] {
+    --bg:#f8f8f8; --card:#ffffff; --card-hover:#f0f0f0; --text:#000; --muted:#6a6a6a; --border:#e0e0e0;
+    --gradient: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
+  }
+    * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Inter', system-ui; background: var(--bg); color: var(--text); margin:0; padding-bottom:90px; background-image: var(--gradient); background-attachment: fixed; transition: all 0.3s ease; overflow-x:hidden; }
 .container { max-width: 1100px; margin: auto; padding: 24px; }
-header { position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); display:flex; justify-content:space-between; align-items:center }
-h1 { font-size: 28px; font-weight:900; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
-button { background: var(--accent); border:none; color:#fff; padding:12px 20px; border-radius:500px; cursor:pointer; font-weight:800; font-size:14px; }
-button.ghost { background: rgba(255,255,255,0.1); color:var(--text); border:1px solid var(--border); }
-button.icon { background:none; padding:10px; color:var(--muted); }
+  header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.4); }
+  [data-theme="light"] header { background: rgba(255,255,255,0.6); }
+  h1 { font-size: 28px; font-weight:900; display:flex; align-items:center; gap:10px; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: logoPulse 3s infinite; }
+  @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
 
-.card { background: var(--card); padding:20px; border-radius:16px; margin:20px 0; border:1px solid var(--border); }
-input, select, textarea { padding:14px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--text); width:100%; }
+  button { background: var(--accent); border:none; color:#fff; padding:12px 24px; border-radius:500px; cursor:pointer; font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; transition: all 0.2s; }
+  button:hover { transform: scale(1.04); background: #8b5cf6; box-shadow:0 0 20px rgba(124,58,237,0.4); }
+  button.ghost { background: rgba(255,255,255,0.1); color:var(--text); border:1px solid var(--border); backdrop-filter: blur(10px); }
+  button.icon { background:none; padding:10px; color:var(--muted); }
+  button.icon:hover { color:var(--text); transform: scale(1.1); }
+  button.icon.active { color:var(--accent); }
 
-.song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; }
-.song:hover { background:var(--card-hover); }
-.song.active { background: rgba(124,58,237,0.2); }
-.cover { width:48px; height:48px; border-radius:8px; background:#333; }
+.card { background: rgba(18,18,18,0.6); backdrop-filter: blur(20px); padding:20px; border-radius:16px; margin:20px 0; border:1px solid var(--border); transition: all 0.3s; animation: slideUp 0.5s ease; }
+  @keyframes slideUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+.card:hover { background: rgba(31,31,31,0.8); transform: translateY(-2px); }
 
-.player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.95); padding:8px 16px; border-top:1px solid var(--border); height:80px; z-index:10; }
+  input, select, textarea { padding:14px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--text); font-size:14px; outline:none; width:100%; }
+  input:focus, textarea:focus { border-color: var(--accent); }
+
+.song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; height:64px; transition: all 0.2s; }
+.song:hover { background:var(--card-hover); transform: translateX(8px); }
+.song.active { background: rgba(124,58,237,0.2); box-shadow:0 0 15px rgba(124,58,237,0.3); }
+.cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+
+/* FIXED PLAYER BAR - SPOTIFY STYLE */
+.player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.95); backdrop-filter: blur(30px); padding:8px 16px; border-top:1px solid var(--border); height:80px; z-index:10; }
 .progress { width:100%; height:4px; background:#535353; border-radius:4px; cursor:pointer; position:absolute; top:0; left:0; }
-.progress-bar { height:100%; background:var(--accent); width:0%; }
-.player-main { display:flex; align-items:center; gap:12px; padding-top:6px; }
-.player-info { flex:1; min-width:0; }
-#nowTitle { font-weight:600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.player-controls { display:flex; gap:4px; }
+.progress-bar { height:100%; background:var(--accent); width:0%; border-radius:4px; transition: width 0.1s linear; }
 
-.modal { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:100; }
-.modal.show { display:flex; }
-.modal-content { background:var(--card); padding:24px; border-radius:16px; width:90%; max-width:400px; border:1px solid var(--border); }
-.eq-slider { margin:16px 0; }
-.eq-slider label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
-input[type=range] { width:100%; }
-.lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; text-align:center; color:var(--muted); }
+.player-main { display:flex; align-items:center; gap:12px; padding-top:6px; }
+.player-info { flex:1; min-width:0; } /* FIX: prevents stretching */
+#nowTitle { 
+  font-weight:600; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; /* FIX: long titles... */
+}
+#nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.player-controls { display:flex; gap:4px; flex-shrink:0; } /* FIX: buttons don't wrap */
+
+.lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
+.lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
 </style>
 </head>
 <body>
@@ -71,35 +133,36 @@ input[type=range] { width:100%; }
 </div>
 
 <div class="container">
-  <header>
+  <header style="display:flex; justify-content:space-between; align-items:center">
     <h1>🎵 Daia</h1>
-    <div style="display:flex; gap:8px">
-      <button class="ghost" onclick="openPlaylist()">📋 Playlist</button>
-      <button class="ghost" onclick="toggleTheme()">🌙</button>
-    </div>
+    <button class="ghost" id="themeBtn" onclick="toggleTheme()">
+      <svg class="icon-small" viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
   </header>
 
   <div class="card">
-    <input type="file" id="fileInput" multiple accept="audio/*" webkitdirectory directory style="display:none">
-    <button onclick="document.getElementById('fileInput').click()">+ Add Music Folder</button>
-    <select id="sleepTimer" onchange="setSleepTimer(this.value)" style="margin-top:10px">
-      <option value="0">Sleep Timer Off</option>
-      <option value="5">5 min</option>
-      <option value="15">15 min</option>
-      <option value="30">30 min</option>
-      <option value="60">60 min</option>
-    </select>
+    <div class="row">
+      <input type="file" id="fileInput" multiple accept="audio/*" webkitdirectory directory style="display:none">
+      <button onclick="document.getElementById('fileInput').click()">+ Add Music Folder</button>
+      <select id="sleepTimer" onchange="setSleepTimer(this.value)">
+        <option value="0">Sleep Timer Off</option>
+        <option value="5">5 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+        <option value="60">60 min</option>
+      </select>
+    </div>
   </div>
 
   <div class="card">
-    <input id="search" placeholder="What do you want to listen to?" oninput="renderSongs(this.value)">
+    <input id="search" placeholder="What do you want to listen to?" style="width:100%" oninput="renderSongs(this.value)">
     <div id="songList" style="margin-top:16px">Add a folder to start building your library</div>
   </div>
 
   <div class="card">
     <h3>Lyrics</h3>
     <div id="lyrics" class="lyrics-box">No lyrics</div>
-    <textarea id="lyricsInput" placeholder="Paste.lrc lyrics here" rows="4" style="margin-top:10px"></textarea>
+    <textarea id="lyricsInput" placeholder="Paste.lrc lyrics here and press Save" rows="4" style="margin-top:10px"></textarea>
     <button onclick="saveLyrics()" style="margin-top:8px">Save Lyrics</button>
   </div>
 </div>
@@ -116,103 +179,109 @@ input[type=range] { width:100%; }
       <button class="icon" onclick="prevSong()">⏮</button>
       <button class="icon" onclick="togglePlay()" id="playBtn">▶</button>
       <button class="icon" onclick="nextSong()">⏭</button>
-      <button class="icon" onclick="openEQ()">🎛</button>
+      <button class="icon" onclick="toggleEQ()">🎛</button> <!-- EQ BUTTON BACK -->
     </div>
   </div>
   <audio id="audio"></audio>
 </div>
 
-<div class="modal" id="eqModal"><div class="modal-content"><h3>Equalizer</h3><div id="eqSliders"></div><button onclick="resetEQ()">Reset</button><button class="ghost" onclick="closeEQ()">Close</button></div></div>
-<div class="modal" id="playlistModal"><div class="modal-content"><h3>Queue</h3><div id="playlistList"></div><button class="ghost" onclick="closePlaylist()">Close</button></div></div>
-
 <script>
 let songs = []; let currentIndex = -1; let currentUrl = null; let sleepTimerId = null;
 const audio = document.getElementById('audio');
-let lyricsData = []; 
-let audioCtx = null, filters = [];
-const eqBands = [60, 230, 910, 3600, 14000];
+let lyricsData = []; let crossfadeDuration = 3;
 
 function loadData() {
-  document.body.setAttribute('data-theme', localStorage.getItem('daia_theme') || 'dark');
+  const savedTheme = localStorage.getItem('daia_theme') || 'dark';
+  document.body.setAttribute('data-theme', savedTheme);
 }
 loadData();
 
 document.getElementById('fileInput').onchange = (e) => {
   const files = [...e.target.files].filter(f => f.type.startsWith('audio'));
-  files.forEach(file => songs.push({id: crypto.randomUUID(), name: file.name.replace(/\.[^/.]+$/, ""), artist:'Local File', file}));
-  renderSongs(); renderPlaylist();
+  files.forEach(file => {
+    songs.push({id: crypto.randomUUID(), name: file.name.replace(/\.[^/.]+$/, ""), artist:'Local File', file, dateAdded: Date.now()});
+  });
+  renderSongs();
 }
 
 function renderSongs(filter='') {
   const filtered = songs.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
   document.getElementById('songList').innerHTML = filtered.map((s,i) =>
-    `<div class="song ${currentIndex===i?'active':''}" onclick="playSong(${i})"><img class="cover" src=""><div><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div></div>`
+    `<div class="song ${currentIndex===i?'active':''}" onclick="playSong(${i})">
+      <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
+      <div><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
+    </div>`
   ).join('') || 'No songs found';
 }
 
-function renderPlaylist() {
-  document.getElementById('playlistList').innerHTML = songs.map((s,i) =>
-    `<div class="song ${currentIndex===i?'active':''}" onclick="playSong(${i}); closePlaylist()"><div>${s.name}</div></div>`
-  ).join('') || 'Queue is empty';
-}
-
-function revokeUrl() { if(currentUrl) URL.revokeObjectURL(currentUrl); currentUrl = null; }
-
-async function setupAudio() {
-  try {
-    if(!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const source = audioCtx.createMediaElementSource(audio);
-      filters = eqBands.map(freq => {
-        const f = audioCtx.createBiquadFilter();
-        f.type = 'peaking'; f.frequency.value = freq; f.Q.value = 1; f.gain.value = 0;
-        return f;
-      });
-      source.connect(filters[0]);
-      for(let i=0; i<filters.length-1; i++) filters[i].connect(filters[i+1]);
-      filters[filters.length-1].connect(audioCtx.destination);
-      buildEQSliders();
-    }
-  } catch(e) { console.log("EQ not supported", e) }
-}
-
-function buildEQSliders() {
-  document.getElementById('eqSliders').innerHTML = filters.map((f,i) => `
-    <div class="eq-slider"><label><span>${eqBands[i]}Hz</span><span id="eqVal${i}">0dB</span></label>
-    <input type="range" min="-12" max="12" value="0" oninput="filters[${i}].gain.value=this.value; document.getElementById('eqVal${i}').innerText=this.value+'dB'"></div>`
-  ).join('');
-}
+function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
 
 async function playSong(i) {
-  await setupAudio();
-  revokeUrl(); currentIndex = i;
+  revokeUrl();
+  currentIndex = i;
   const song = songs[currentIndex];
   currentUrl = URL.createObjectURL(song.file);
-  audio.src = currentUrl; audio.play();
+  audio.src = currentUrl;
+  audio.play();
   document.getElementById('nowTitle').innerText = song.name;
   document.getElementById('playBtn').innerText = '⏸';
-  renderSongs(); renderPlaylist();
+  loadLyrics(song.id);
+  renderSongs();
 }
 
-function prevSong() { if(songs.length) playSong((currentIndex-1+songs.length)%songs.length); }
-function nextSong() { if(songs.length) playSong((currentIndex+1)%songs.length); }
+function prevSong() { if(songs.length===0) return; playSong((currentIndex-1+songs.length)%songs.length); }
+function nextSong() { if(songs.length===0) return; playSong((currentIndex+1)%songs.length); }
 function togglePlay() { audio.paused? audio.play() : audio.pause(); document.getElementById('playBtn').innerText = audio.paused? '▶' : '⏸'; }
 
-audio.ontimeupdate = () => { if(audio.duration) document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%'; }
+audio.ontimeupdate = () => {
+  if(!audio.duration) return;
+  document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%';
+  updateLyrics();
+}
 function seek(e) { const rect = e.target.getBoundingClientRect(); audio.currentTime = ((e.clientX - rect.left)/rect.width)*audio.duration; }
 
-function saveLyrics() { if(currentIndex!==-1) localStorage.setItem('lyrics_'+songs[currentIndex].id, document.getElementById('lyricsInput').value); }
+function parseLRC(text) {
+  return text.split('\n').map(line=>{
+    const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+    if(match) return {time: parseInt(match[1])*60 + parseFloat(match[2]), text: match[3]};
+  }).filter(Boolean);
+}
+function loadLyrics(id) {
+  const lrc = localStorage.getItem('lyrics_'+id) || '';
+  lyricsData = parseLRC(lrc);
+  document.getElementById('lyricsInput').value = lrc;
+  document.getElementById('lyrics').innerHTML = lyricsData.map(l=>`<div>${l.text}</div>`).join('') || 'No lyrics';
+}
+function saveLyrics() {
+  if(currentIndex===-1) return;
+  localStorage.setItem('lyrics_'+songs[currentIndex].id, document.getElementById('lyricsInput').value);
+  loadLyrics(songs[currentIndex].id);
+}
+function updateLyrics() {
+  if(!lyricsData.length) return;
+  const t = audio.currentTime;
+  const line = lyricsData.findLast(l=>l.time<=t);
+  if(line) document.getElementById('lyrics').innerHTML = lyricsData.map(l=>`<div class="${l===line?'lyrics-line active':''}">${l.text}</div>`).join('');
+}
 
-function setSleepTimer(min) { clearTimeout(sleepTimerId); if(min>0) sleepTimerId = setTimeout(()=>{ audio.pause(); alert('Sleep timer ended') }, min*60000); }
-function toggleTheme() { const theme = document.body.getAttribute('data-theme')==='light'?'dark':'light'; document.body.setAttribute('data-theme', theme); localStorage.setItem('daia_theme', theme); }
+function setSleepTimer(min) {
+  clearTimeout(sleepTimerId);
+  if(min>0) sleepTimerId = setTimeout(()=>{ audio.pause(); alert('Sleep timer ended') }, min*60000);
+}
+function toggleTheme() {
+  const theme = document.body.getAttribute('data-theme')==='light'?'dark':'light';
+  document.body.setAttribute('data-theme', theme);
+  localStorage.setItem('daia_theme', theme);
+}
+function toggleEQ() {
+  alert('EQ coming soon! 🎛') // placeholder
+}
 
-function openEQ() { document.getElementById('eqModal').classList.add('show'); }
-function closeEQ() { document.getElementById('eqModal').classList.remove('show'); }
-function resetEQ() { filters.forEach((f,i)=>{ f.gain.value=0; document.querySelectorAll('#eqSliders input')[i].value=0; document.getElementById('eqVal'+i).innerText='0dB'; }); }
-function openPlaylist() { renderPlaylist(); document.getElementById('playlistModal').classList.add('show'); }
-function closePlaylist() { document.getElementById('playlistModal').classList.remove('show'); }
-
-window.addEventListener('load', () => setTimeout(() => document.getElementById('loading').classList.add('hide'), 1500));
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hide');
+  }, 1500);
+});
 </script>
 </body>
 </html>
