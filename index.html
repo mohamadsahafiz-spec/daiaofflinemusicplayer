@@ -12,59 +12,16 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
 <style>
-#loading {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 9999;
-  transition: opacity 0.5s ease;
-}
+#loading { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; transition: opacity 0.5s ease; }
 #loading.hide { opacity: 0; pointer-events: none; }
-
-.loader-heart {
-  width: 100px;
-  height: 90px;
-  position: relative;
-  animation: pulse 1.5s ease-in-out infinite;
-  margin-bottom: 10px;
-}
-.loader-heart::before,
-.loader-heart::after {
-  content: '';
-  width: 52px;
-  height: 80px;
-  position: absolute;
-  background: linear-gradient(135deg, #ff00ff, #a855f7);
-  border-radius: 50px 50px 0 0;
-  box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899;
-}
+.loader-heart { width: 100px; height: 90px; position: relative; animation: pulse 1.5s ease-in-out infinite; margin-bottom: 10px; }
+.loader-heart::before,.loader-heart::after { content: ''; width: 52px; height: 80px; position: absolute; background: linear-gradient(135deg, #ff00ff, #a855f7); border-radius: 50px 50px 0 0; box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899; }
 .loader-heart::before { left: 50px; transform: rotate(-45deg); transform-origin: 0 100%; }
 .loader-heart::after { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
-
-.loading-text {
-  font-size: 28px;
-  font-weight: 900;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 3px;
-  animation: pulse 2s infinite;
-}
-
-.pulse {
-  width: 220px;
-  height: 4px;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  border-radius: 2px;
-  margin-top: 20px;
-  animation: heartbeat-bar 1.2s ease-in-out infinite;
-}
+.loading-text { font-size: 28px; font-weight: 900; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; animation: pulse 2s infinite; }
+.pulse { width: 220px; height: 4px; background: linear-gradient(90deg, #8b5cf6, #06b6d4); border-radius: 2px; margin-top: 20px; animation: heartbeat-bar 1.2s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-@keyframes heartbeat-bar { 0%, 100% { transform: scaleX(0.3); opacity: 0.5; } 50% { transform: scaleX(1); opacity: 1; } }
+@keyframes heartbeat-bar { 0%, 100% { transform: scaleX(0.3); opacity: 0.5; } 50% { transform: scaleX(1); opacity: 1; }
 
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   :root {
@@ -103,25 +60,28 @@
 .song.active { background: rgba(124,58,237,0.2); box-shadow:0 0 15px rgba(124,58,237,0.3); }
 .cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 
-/* FIXED PLAYER BAR - SPOTIFY STYLE */
+/* PLAYER */
 .player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.95); backdrop-filter: blur(30px); padding:8px 16px; border-top:1px solid var(--border); height:80px; z-index:10; }
 .progress { width:100%; height:4px; background:#535353; border-radius:4px; cursor:pointer; position:absolute; top:0; left:0; }
 .progress-bar { height:100%; background:var(--accent); width:0%; border-radius:4px; transition: width 0.1s linear; }
-
 .player-main { display:flex; align-items:center; gap:12px; padding-top:6px; }
-.player-info { flex:1; min-width:0; } /* FIX: prevents stretching */
-#nowTitle { 
-  font-weight:600; 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; /* FIX: long titles... */
-}
+.player-info { flex:1; min-width:0; }
+#nowTitle { font-weight:600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player-controls { display:flex; gap:4px; flex-shrink:0; }
 
-.player-controls { display:flex; gap:4px; flex-shrink:0; } /* FIX: buttons don't wrap */
+/* MODALS */
+.modal { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:none; align-items:center; justify-content:center; z-index:100; }
+.modal.show { display:flex; }
+.modal-content { background:var(--card); padding:24px; border-radius:16px; width:90%; max-width:400px; border:1px solid var(--border); }
+.eq-slider { margin:16px 0; }
+.eq-slider label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
+input[type=range] { width:100%; accent-color: var(--accent); }
 
 .lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
 .lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
+.playlist-item { padding:10px; border-radius:8px; cursor:pointer; display:flex; justify-content:space-between; }
+.playlist-item:hover { background:var(--card-hover); }
 </style>
 </head>
 <body>
@@ -135,9 +95,12 @@
 <div class="container">
   <header style="display:flex; justify-content:space-between; align-items:center">
     <h1>🎵 Daia</h1>
-    <button class="ghost" id="themeBtn" onclick="toggleTheme()">
-      <svg class="icon-small" viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
+    <div style="display:flex; gap:8px">
+      <button class="ghost" onclick="openPlaylist()">📋 Playlist</button>
+      <button class="ghost" id="themeBtn" onclick="toggleTheme()">
+        <svg viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
   </header>
 
   <div class="card">
@@ -179,16 +142,37 @@
       <button class="icon" onclick="prevSong()">⏮</button>
       <button class="icon" onclick="togglePlay()" id="playBtn">▶</button>
       <button class="icon" onclick="nextSong()">⏭</button>
-      <button class="icon" onclick="toggleEQ()">🎛</button> <!-- EQ BUTTON BACK -->
+      <button class="icon" onclick="openEQ()">🎛</button>
     </div>
   </div>
   <audio id="audio"></audio>
 </div>
 
+<!-- EQ MODAL -->
+<div class="modal" id="eqModal" onclick="closeEQ(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <h3>Equalizer</h3>
+    <div id="eqSliders"></div>
+    <button onclick="resetEQ()" style="margin-top:10px">Reset</button>
+    <button class="ghost" onclick="closeEQ()" style="margin-top:10px">Close</button>
+  </div>
+</div>
+
+<!-- PLAYLIST MODAL -->
+<div class="modal" id="playlistModal" onclick="closePlaylist(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <h3>Queue / Playlist</h3>
+    <div id="playlistList" style="max-height:300px; overflow-y:auto"></div>
+    <button class="ghost" onclick="closePlaylist()" style="margin-top:10px">Close</button>
+  </div>
+</div>
+
 <script>
 let songs = []; let currentIndex = -1; let currentUrl = null; let sleepTimerId = null;
 const audio = document.getElementById('audio');
-let lyricsData = []; let crossfadeDuration = 3;
+let lyricsData = []; 
+let audioCtx, gainNode, filters = [];
+const eqBands = [60, 230, 910, 3600, 14000];
 
 function loadData() {
   const savedTheme = localStorage.getItem('daia_theme') || 'dark';
@@ -202,6 +186,7 @@ document.getElementById('fileInput').onchange = (e) => {
     songs.push({id: crypto.randomUUID(), name: file.name.replace(/\.[^/.]+$/, ""), artist:'Local File', file, dateAdded: Date.now()});
   });
   renderSongs();
+  renderPlaylist();
 }
 
 function renderSongs(filter='') {
@@ -214,9 +199,47 @@ function renderSongs(filter='') {
   ).join('') || 'No songs found';
 }
 
+function renderPlaylist() {
+  document.getElementById('playlistList').innerHTML = songs.map((s,i) =>
+    `<div class="playlist-item ${currentIndex===i?'active':''}" onclick="playSong(${i}); closePlaylist()">
+      <span>${s.name}</span>
+    </div>`
+  ).join('') || 'Queue is empty';
+}
+
 function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
 
+async function setupAudio() {
+  if(!audioCtx) {
+    audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(audio);
+    gainNode = audioCtx.createGain();
+    filters = eqBands.map(freq => {
+      const f = audioCtx.createBiquadFilter();
+      f.type = 'peaking';
+      f.frequency.value = freq;
+      f.Q.value = 1;
+      f.gain.value = 0;
+      return f;
+    });
+    source.connect(filters[0]);
+    for(let i=0; i<filters.length-1; i++) filters[i].connect(filters[i+1]);
+    filters[filters.length-1].connect(gainNode).connect(audioCtx.destination);
+    buildEQSliders();
+  }
+}
+
+function buildEQSliders() {
+  document.getElementById('eqSliders').innerHTML = filters.map((f,i) => `
+    <div class="eq-slider">
+      <label><span>${eqBands[i]}Hz</span><span id="eqVal${i}">0dB</span></label>
+      <input type="range" min="-12" max="12" value="0" oninput="filters[${i}].gain.value=this.value; document.getElementById('eqVal${i}').innerText=this.value+'dB'">
+    </div>
+  `).join('');
+}
+
 async function playSong(i) {
+  await setupAudio();
   revokeUrl();
   currentIndex = i;
   const song = songs[currentIndex];
@@ -227,6 +250,7 @@ async function playSong(i) {
   document.getElementById('playBtn').innerText = '⏸';
   loadLyrics(song.id);
   renderSongs();
+  renderPlaylist();
 }
 
 function prevSong() { if(songs.length===0) return; playSong((currentIndex-1+songs.length)%songs.length); }
@@ -273,14 +297,16 @@ function toggleTheme() {
   document.body.setAttribute('data-theme', theme);
   localStorage.setItem('daia_theme', theme);
 }
-function toggleEQ() {
-  alert('EQ coming soon! 🎛') // placeholder
-}
+
+function openEQ() { document.getElementById('eqModal').classList.add('show'); }
+function closeEQ(e) { if(!e || e.target.id==='eqModal') document.getElementById('eqModal').classList.remove('show'); }
+function resetEQ() { filters.forEach((f,i)=>{ f.gain.value=0; document.querySelectorAll('input[type=range]')[i].value=0; document.getElementById('eqVal'+i).innerText='0dB'; }); }
+
+function openPlaylist() { renderPlaylist(); document.getElementById('playlistModal').classList.add('show'); }
+function closePlaylist(e) { if(!e || e.target.id==='playlistModal') document.getElementById('playlistModal').classList.remove('show'); }
 
 window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loading').classList.add('hide');
-  }, 1500);
+  setTimeout(() => { document.getElementById('loading').classList.add('hide'); }, 1500);
 });
 </script>
 </body>
