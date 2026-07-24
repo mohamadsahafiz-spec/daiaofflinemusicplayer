@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-startup-image" href="splash-screen.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 <style>
 /* --- PREMIUM LOADING SCREEN --- */
 #loading {
@@ -121,7 +122,7 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover { transform: scale(1.
 
 /* --- THE NEW EXPANDED SLIDE-UP VIEW --- */
 #expanded-view {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 90px; /* Rests perfectly on top of the player bar */
+  position: fixed; top: 0; left: 0; right: 0; bottom: 90px;
   background: var(--bg); background-image: var(--gradient);
   z-index: 40;
   transform: translateY(110%);
@@ -315,20 +316,48 @@ function toggleTheme() {
 
 function toggleExpanded() {
   document.getElementById('expanded-view').classList.toggle('show');
-  initEQ(); // Fire up EQ if they open the window
+  initEQ();
 }
 
 window.addEventListener('load', () => {
   setTimeout(() => { document.getElementById('loading').classList.add('hide'); }, 1200);
 });
 
-// --- LIBRARY LOGIC ---
+// --- LIBRARY LOGIC WITH ID3 PARSING ---
 document.getElementById('fileInput').onchange = (e) => {
   const files = [...e.target.files].filter(f => f.type.startsWith('audio'));
+  const jsmediatags = window.jsmediatags;
+  
+  document.getElementById('songList').innerHTML = '<div style="color:var(--accent); text-align:center; padding:20px; font-weight:bold;">Reading album art...</div>';
+
   files.forEach(file => {
-    songs.push({id: crypto.randomUUID(), name: file.name.replace(/\.[^/.]+$/, ""), artist:'Local File', file, dateAdded: Date.now()});
+    jsmediatags.read(file, {
+      onSuccess: function(tag) {
+        let coverUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+        let title = file.name.replace(/\.[^/.]+$/, "");
+        let artist = 'Unknown Artist';
+
+        if (tag.tags) {
+          if (tag.tags.title) title = tag.tags.title;
+          if (tag.tags.artist) artist = tag.tags.artist;
+          if (tag.tags.picture) {
+            const data = tag.tags.picture.data;
+            const format = tag.tags.picture.format;
+            const byteArray = new Uint8Array(data);
+            const blob = new Blob([byteArray], { type: format });
+            coverUrl = URL.createObjectURL(blob);
+          }
+        }
+        
+        songs.push({id: crypto.randomUUID(), name: title, artist: artist, file: file, cover: coverUrl, dateAdded: Date.now()});
+        if (currentView === 'All Music') renderSongs();
+      },
+      onError: function(error) {
+        songs.push({id: crypto.randomUUID(), name: file.name.replace(/\.[^/.]+$/, ""), artist:'Local File', file: file, cover: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", dateAdded: Date.now()});
+        if (currentView === 'All Music') renderSongs();
+      }
+    });
   });
-  renderSongs();
 }
 
 function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
@@ -337,7 +366,7 @@ function renderSongs(filter='') {
   const filtered = songs.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
   document.getElementById('songList').innerHTML = filtered.map(s =>
     `<div class="song ${currentIndex !== -1 && songs[currentIndex].id === s.id ? 'active' : ''}" onclick="playSongById('${s.id}')">
-      <img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+      <img class="cover" src="${s.cover}">
       <div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:13px; color:var(--muted); margin-top:2px;">${s.artist}</div></div>
       <button class="song-add-btn" onclick="addToPlaylist(event, '${s.id}')">+ Playlist</button>
     </div>`
@@ -358,9 +387,12 @@ async function playSong(i) {
   audio.src = currentUrl;
   audio.play();
   
-  // Update texts everywhere
   document.getElementById('nowTitle').innerText = song.name;
+  document.getElementById('expandedArtist').innerText = song.artist;
+  document.getElementById('nowArtist').innerText = song.artist;
   document.getElementById('expandedTitle').innerText = song.name;
+  document.getElementById('nowCover').src = song.cover;
+  document.getElementById('expandedCover').src = song.cover;
   document.getElementById('playBtn').innerHTML = svgPause;
   
   loadLyrics(song.id);
@@ -437,13 +469,9 @@ function updateLyrics() {
     const lyricsContainer = document.getElementById('lyrics');
     if (lyricsContainer.innerHTML !== html) {
         lyricsContainer.innerHTML = html;
-        // Auto-scroll logic
         const activeEl = lyricsContainer.querySelector('.active');
         if(activeEl) {
-            lyricsContainer.scrollTo({
-                top: activeEl.offsetTop - lyricsContainer.offsetTop - (lyricsContainer.clientHeight/2) + 20,
-                behavior: 'smooth'
-            });
+            lyricsContainer.scrollTo({ top: activeEl.offsetTop - lyricsContainer.offsetTop - (lyricsContainer.clientHeight/2) + 20, behavior: 'smooth' });
         }
     }
   }
@@ -457,7 +485,11 @@ function setSleepTimer(min) {
 // --- SYSTEM LOGIC ---
 function updateMediaSession(song) {
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({ title: song.name, artist: song.artist || 'Local File' });
+    navigator.mediaSession.metadata = new MediaMetadata({ 
+      title: song.name, 
+      artist: song.artist,
+      artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }]
+    });
     navigator.mediaSession.setActionHandler('play', togglePlay);
     navigator.mediaSession.setActionHandler('pause', togglePlay);
     navigator.mediaSession.setActionHandler('previoustrack', prevSong);
@@ -506,7 +538,7 @@ function switchView(tab) {
     const filteredSongs = songs.filter(s => playlistSongIds.includes(s.id));
     document.getElementById('songList').innerHTML = filteredSongs.map((s, i) =>
       `<div class="song ${currentIndex !== -1 && songs[currentIndex].id === s.id ? 'active' : ''}" onclick="playSongById('${s.id}')">
-        <img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+        <img class="cover" src="${s.cover}">
         <div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:13px; color:var(--muted); margin-top:2px;">${s.artist}</div></div>
         <button class="song-add-btn" onclick="removeFromPlaylist(event, '${s.id}', '${tab}')">Remove</button>
       </div>`
