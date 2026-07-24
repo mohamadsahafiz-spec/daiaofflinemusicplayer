@@ -165,7 +165,15 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .controls-section { flex: 1.5; justify-content: center; gap: 16px; }
 .tools-section { flex: 1; justify-content: flex-end; gap: 12px; }
 
-/* Custom Circular Play Button */
+/* FIX: Prevents text from pushing buttons and adds ellipses */
+.player-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#nowTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#nowArtist { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* FIX: Prevents cover image from squishing */
+.cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); flex-shrink: 0; }
+
+/* Custom Circular Play Button - FIX: Prevents squishing */
 .btn-play {
   background: var(--accent);
   color: #fff;
@@ -179,7 +187,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 4px 10px rgba(124,58,237,0.3);
-  flex-shrink: 0; /* Prevents the circle from turning into an oval */
+  flex-shrink: 0; 
 }
 .btn-play:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(124,58,237,0.5); }
 
@@ -212,15 +220,10 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
   .controls-section { gap: 8px; }
   .tools-section .vol-slider { width: 50px; }
 }
-/* ADD THIS MISSING LINE BACK (Put it right above #nowArtist) */
-#nowTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .player-controls { display:flex; gap:4px; flex-shrink:0; }
-
 .lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
 .lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
-</style>
 </head>
 <body>
 
