@@ -247,17 +247,20 @@ document.getElementById('fileInput').onchange = (e) => {
   renderSongs();
 }
 
+function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
+
+// Renders the main "All Music" library
 function renderSongs(filter='') {
   const filtered = songs.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
   document.getElementById('songList').innerHTML = filtered.map(s =>
     `<div class="song ${currentIndex !== -1 && songs[currentIndex].id === s.id ? 'active' : ''}" onclick="playSongById('${s.id}')">
       <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
-      <div><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
+      <div style="flex:1"><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
+      <button class="song-add-btn" onclick="addToPlaylist(event, '${s.id}')">+ Playlist</button>
     </div>`
   ).join('') || 'No songs found';
 }
 
-// New helper function to look up the real index
 function playSongById(id) {
   const index = songs.findIndex(s => s.id === id);
   if (index !== -1) playSong(index);
@@ -273,26 +276,54 @@ async function playSong(i) {
   document.getElementById('nowTitle').innerText = song.name;
   document.getElementById('playBtn').innerText = '⏸';
   loadLyrics(song.id);
-  // Re-render to clear the search filter and show active state correctly
+  
+  // Triggers the phone lock screen controls!
+  updateMediaSession(song); 
+
   document.getElementById('search').value = ''; 
-  renderSongs(); 
+  
+  // Re-renders the correct view to show the active playing song
+  if (currentView === 'All Music') {
+      renderSongs(); 
+  } else {
+      switchView(currentView); 
+  }
 }
 
 function prevSong() { if(songs.length===0) return; playSong((currentIndex-1+songs.length)%songs.length); }
-function nextSong() { if(songs.length===0) return; playSong((currentIndex+1)%songs.length); }
+
+function nextSong() {
+  if(songs.length===0) return;
+  if(isRepeat) { audio.currentTime = 0; audio.play(); return; }
+  if(isShuffle) { playSong(Math.floor(Math.random() * songs.length)); return; }
+  playSong((currentIndex+1)%songs.length);
+}
+
 function togglePlay() { audio.paused? audio.play() : audio.pause(); document.getElementById('playBtn').innerText = audio.paused? '▶' : '⏸'; }
-  audio.onended = nextSong;
+audio.onended = nextSong;
+
+// TIMELINE & FORMATTING
+function formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
 
 audio.ontimeupdate = () => {
   if(!audio.duration) return;
   document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%';
+  document.getElementById('timeCurrent').innerText = formatTime(audio.currentTime);
+  document.getElementById('timeTotal').innerText = formatTime(audio.duration);
   updateLyrics();
 }
+
 function seek(e) { 
   const rect = e.currentTarget.getBoundingClientRect(); 
   audio.currentTime = ((e.clientX - rect.left)/rect.width)*audio.duration; 
 }
 
+// LYRICS LOGIC
 function parseLRC(text) {
   return text.split('\n').map(line=>{
     const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
@@ -317,6 +348,7 @@ function updateLyrics() {
   if(line) document.getElementById('lyrics').innerHTML = lyricsData.map(l=>`<div class="${l===line?'lyrics-line active':''}">${l.text}</div>`).join('');
 }
 
+// UTILS
 function setSleepTimer(min) {
   clearTimeout(sleepTimerId);
   if(min>0) sleepTimerId = setTimeout(()=>{ audio.pause(); alert('Sleep timer ended') }, min*60000);
@@ -326,53 +358,22 @@ function toggleTheme() {
   document.body.setAttribute('data-theme', theme);
   localStorage.setItem('daia_theme', theme);
 }
-function toggleEQ() {
-  alert('EQ coming soon! 🎛') // placeholder
-}
 
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('loading').classList.add('hide');
   }, 1500);
 });
-  // --- 1. TIMELINE & FORMATTING ---
-function formatTime(seconds) {
-  if (!seconds || isNaN(seconds)) return '0:00';
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
 
-// UPDATE your existing ontimeupdate to include timeline text
-audio.ontimeupdate = () => {
-  if(!audio.duration) return;
-  document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%';
-  document.getElementById('timeCurrent').innerText = formatTime(audio.currentTime);
-  document.getElementById('timeTotal').innerText = formatTime(audio.duration);
-  updateLyrics();
-}
-
-// --- 2. SHUFFLE & REPEAT LOGIC ---
+// SHUFFLE & REPEAT LOGIC
 let isShuffle = false; let isRepeat = false;
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffleBtn').classList.toggle('active', isShuffle); }
 function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeatBtn').classList.toggle('active', isRepeat); }
 
-// Make sure to attach this so it auto-plays the next song when one finishes!
-audio.onended = nextSong; 
-
-// OVERRIDE your nextSong function
-function nextSong() {
-  if(songs.length===0) return;
-  if(isRepeat) { audio.currentTime = 0; audio.play(); return; }
-  if(isShuffle) { playSong(Math.floor(Math.random() * songs.length)); return; }
-  playSong((currentIndex+1)%songs.length);
-}
-
-// --- 3. VOLUME CONTROL ---
+// VOLUME CONTROL
 function changeVolume(val) { audio.volume = val; }
 
-// --- 4. LOCK SCREEN / BACKGROUND CONTROLS (Media Session API) ---
-// When she locks her screen, or if the app is minimized and you bring up the Windows 11 media overlay or swipe down the Android notification shade, this pulls the song data perfectly.
+// LOCK SCREEN / BACKGROUND CONTROLS (Media Session API)
 function updateMediaSession(song) {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -386,9 +387,7 @@ function updateMediaSession(song) {
   }
 }
 
-// ADD `updateMediaSession(song);` inside your existing playSong() function, right after audio.play();
-
-// --- 5. EQUALIZER (Web Audio API) ---
+// EQUALIZER (Web Audio API)
 let audioCtx, track, bass, mid, treble;
 function initEQ() {
   if(audioCtx) return;
@@ -415,7 +414,7 @@ function updateEQ(band, value) {
   if(band === 'treble') treble.gain.value = value;
 }
 
-// --- 6. PLAYLISTS (The most important thing) ---
+// PLAYLISTS LOGIC
 let playlists = JSON.parse(localStorage.getItem('daia_playlists')) || { "Favorites": [] };
 let currentView = 'All Music';
 
@@ -431,14 +430,13 @@ function switchView(tab) {
   renderPlaylists();
   
   if(tab === 'All Music') {
-    renderSongs(); // Your existing function
+    renderSongs(); 
   } else {
-    // Render only songs in the selected playlist
     const playlistSongIds = playlists[tab];
     const filteredSongs = songs.filter(s => playlistSongIds.includes(s.id));
     
     document.getElementById('songList').innerHTML = filteredSongs.map((s, i) =>
-      `<div class="song" onclick="playSong(${songs.findIndex(og => og.id === s.id)})">
+      `<div class="song ${currentIndex !== -1 && songs[currentIndex].id === s.id ? 'active' : ''}" onclick="playSongById('${s.id}')">
         <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
         <div style="flex:1"><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
         <button class="song-add-btn" onclick="removeFromPlaylist(event, '${s.id}', '${tab}')">Remove</button>
@@ -460,18 +458,8 @@ function savePlaylists() {
   localStorage.setItem('daia_playlists', JSON.stringify(playlists));
 }
 
-// We need to modify your existing renderSongs() slightly so users can ADD songs to playlists from the 'All Music' view.
-// Replace the innerHTML mapping inside your renderSongs() function with this:
-/*
-  `<div class="song ${currentIndex!==-1 && songs[currentIndex].id===s.id ? 'active':''}" onclick="playSong(${i})">
-    <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
-    <div style="flex:1"><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
-    <button class="song-add-btn" onclick="addToPlaylist(event, '${s.id}')">+ Playlist</button>
-  </div>`
-*/
-
 function addToPlaylist(event, songId) {
-  event.stopPropagation(); // Prevents the song from playing when you click the Add button
+  event.stopPropagation(); 
   const playlistName = prompt('Enter playlist name to add to: \n(' + Object.keys(playlists).join(', ') + ')', 'Favorites');
   if(playlistName && playlists[playlistName]) {
     if(!playlists[playlistName].includes(songId)) {
@@ -486,12 +474,11 @@ function removeFromPlaylist(event, songId, playlistName) {
   event.stopPropagation();
   playlists[playlistName] = playlists[playlistName].filter(id => id !== songId);
   savePlaylists();
-  switchView(playlistName); // Re-render
+  switchView(playlistName); 
 }
 
-// Call this once on load
+// Call on startup
 renderPlaylists();
-</script>
   <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
