@@ -55,6 +55,20 @@
   letter-spacing: 3px;
   animation: pulse 2s infinite;
 }
+  .playlist-tab {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 500px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.playlist-tab:hover { background: rgba(255,255,255,0.2); }
+.playlist-tab.active { background: var(--accent); font-weight: bold; }
+.song-add-btn {
+  background: transparent; color: var(--accent); padding: 4px 8px; border: 1px solid var(--accent); font-size:12px;
+}
 
 .pulse {
   width: 220px;
@@ -167,8 +181,30 @@
     <button onclick="saveLyrics()" style="margin-top:8px">Save Lyrics</button>
   </div>
 </div>
+<!-- PLAYLIST & EQ PANELS (Add right above the player-bar) -->
+<div class="card" id="playlistCard">
+  <div style="display:flex; justify-content:space-between; align-items:center">
+    <h3>Playlists</h3>
+    <button class="ghost" onclick="createPlaylist()">+ New</button>
+  </div>
+  <div id="playlistTabs" style="display:flex; gap:10px; margin-top:10px; overflow-x:auto; padding-bottom:10px;"></div>
+</div>
 
+<div class="card" id="eqCard" style="display:none;">
+  <h3>Equalizer</h3>
+  <div style="display:flex; justify-content:space-between; gap:20px; text-align:center;">
+    <div><label>Bass</label><input type="range" min="-15" max="15" value="0" oninput="updateEQ('bass', this.value)"></div>
+    <div><label>Mid</label><input type="range" min="-15" max="15" value="0" oninput="updateEQ('mid', this.value)"></div>
+    <div><label>Treble</label><input type="range" min="-15" max="15" value="0" oninput="updateEQ('treble', this.value)"></div>
+  </div>
+</div>
+
+<!-- UPGRADED PLAYER BAR -->
 <div class="player-bar">
+  <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom: 4px; padding: 0 4px;">
+    <span id="timeCurrent">0:00</span>
+    <span id="timeTotal">0:00</span>
+  </div>
   <div class="progress" onclick="seek(event)"><div class="progress-bar" id="progressBar"></div></div>
   <div class="player-main">
     <img id="nowCover" class="cover" src="">
@@ -177,10 +213,16 @@
       <div id="nowArtist">Add music to start</div>
     </div>
     <div class="player-controls">
+      <button class="icon" id="shuffleBtn" onclick="toggleShuffle()">🔀</button>
       <button class="icon" onclick="prevSong()">⏮</button>
       <button class="icon" onclick="togglePlay()" id="playBtn">▶</button>
       <button class="icon" onclick="nextSong()">⏭</button>
-      <button class="icon" onclick="toggleEQ()">🎛</button> <!-- EQ BUTTON BACK -->
+      <button class="icon" id="repeatBtn" onclick="toggleRepeat()">🔁</button>
+      <button class="icon" onclick="toggleEQUI()">🎛</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; width:80px; margin-left:10px;">
+      <span style="font-size:14px;">🔊</span>
+      <input type="range" id="volSlider" min="0" max="1" step="0.01" value="1" oninput="changeVolume(this.value)">
     </div>
   </div>
   <audio id="audio"></audio>
@@ -293,6 +335,162 @@ window.addEventListener('load', () => {
     document.getElementById('loading').classList.add('hide');
   }, 1500);
 });
+  // --- 1. TIMELINE & FORMATTING ---
+function formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// UPDATE your existing ontimeupdate to include timeline text
+audio.ontimeupdate = () => {
+  if(!audio.duration) return;
+  document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%';
+  document.getElementById('timeCurrent').innerText = formatTime(audio.currentTime);
+  document.getElementById('timeTotal').innerText = formatTime(audio.duration);
+  updateLyrics();
+}
+
+// --- 2. SHUFFLE & REPEAT LOGIC ---
+let isShuffle = false; let isRepeat = false;
+function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffleBtn').classList.toggle('active', isShuffle); }
+function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeatBtn').classList.toggle('active', isRepeat); }
+
+// Make sure to attach this so it auto-plays the next song when one finishes!
+audio.onended = nextSong; 
+
+// OVERRIDE your nextSong function
+function nextSong() {
+  if(songs.length===0) return;
+  if(isRepeat) { audio.currentTime = 0; audio.play(); return; }
+  if(isShuffle) { playSong(Math.floor(Math.random() * songs.length)); return; }
+  playSong((currentIndex+1)%songs.length);
+}
+
+// --- 3. VOLUME CONTROL ---
+function changeVolume(val) { audio.volume = val; }
+
+// --- 4. LOCK SCREEN / BACKGROUND CONTROLS (Media Session API) ---
+// When she locks her screen, or if the app is minimized and you bring up the Windows 11 media overlay or swipe down the Android notification shade, this pulls the song data perfectly.
+function updateMediaSession(song) {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.name,
+      artist: song.artist || 'Local File',
+    });
+    navigator.mediaSession.setActionHandler('play', togglePlay);
+    navigator.mediaSession.setActionHandler('pause', togglePlay);
+    navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+    navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+  }
+}
+
+// ADD `updateMediaSession(song);` inside your existing playSong() function, right after audio.play();
+
+// --- 5. EQUALIZER (Web Audio API) ---
+let audioCtx, track, bass, mid, treble;
+function initEQ() {
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  track = audioCtx.createMediaElementSource(audio);
+  
+  bass = audioCtx.createBiquadFilter(); bass.type = 'lowshelf'; bass.frequency.value = 250;
+  mid = audioCtx.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1000; mid.Q.value = 1;
+  treble = audioCtx.createBiquadFilter(); treble.type = 'highshelf'; treble.frequency.value = 4000;
+  
+  track.connect(bass); bass.connect(mid); mid.connect(treble); treble.connect(audioCtx.destination);
+}
+
+function toggleEQUI() {
+  initEQ();
+  const eqCard = document.getElementById('eqCard');
+  eqCard.style.display = eqCard.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateEQ(band, value) {
+  if(!audioCtx) return;
+  if(band === 'bass') bass.gain.value = value;
+  if(band === 'mid') mid.gain.value = value;
+  if(band === 'treble') treble.gain.value = value;
+}
+
+// --- 6. PLAYLISTS (The most important thing) ---
+let playlists = JSON.parse(localStorage.getItem('daia_playlists')) || { "Favorites": [] };
+let currentView = 'All Music';
+
+function renderPlaylists() {
+  const tabs = ['All Music', ...Object.keys(playlists)];
+  document.getElementById('playlistTabs').innerHTML = tabs.map(tab => 
+    `<div class="playlist-tab ${currentView === tab ? 'active' : ''}" onclick="switchView('${tab}')">${tab}</div>`
+  ).join('');
+}
+
+function switchView(tab) {
+  currentView = tab;
+  renderPlaylists();
+  
+  if(tab === 'All Music') {
+    renderSongs(); // Your existing function
+  } else {
+    // Render only songs in the selected playlist
+    const playlistSongIds = playlists[tab];
+    const filteredSongs = songs.filter(s => playlistSongIds.includes(s.id));
+    
+    document.getElementById('songList').innerHTML = filteredSongs.map((s, i) =>
+      `<div class="song" onclick="playSong(${songs.findIndex(og => og.id === s.id)})">
+        <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
+        <div style="flex:1"><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
+        <button class="song-add-btn" onclick="removeFromPlaylist(event, '${s.id}', '${tab}')">Remove</button>
+      </div>`
+    ).join('') || 'Playlist is empty';
+  }
+}
+
+function createPlaylist() {
+  const name = prompt('Enter playlist name:');
+  if(name && !playlists[name]) {
+    playlists[name] = [];
+    savePlaylists();
+    renderPlaylists();
+  }
+}
+
+function savePlaylists() {
+  localStorage.setItem('daia_playlists', JSON.stringify(playlists));
+}
+
+// We need to modify your existing renderSongs() slightly so users can ADD songs to playlists from the 'All Music' view.
+// Replace the innerHTML mapping inside your renderSongs() function with this:
+/*
+  `<div class="song ${currentIndex!==-1 && songs[currentIndex].id===s.id ? 'active':''}" onclick="playSong(${i})">
+    <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
+    <div style="flex:1"><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
+    <button class="song-add-btn" onclick="addToPlaylist(event, '${s.id}')">+ Playlist</button>
+  </div>`
+*/
+
+function addToPlaylist(event, songId) {
+  event.stopPropagation(); // Prevents the song from playing when you click the Add button
+  const playlistName = prompt('Enter playlist name to add to: \n(' + Object.keys(playlists).join(', ') + ')', 'Favorites');
+  if(playlistName && playlists[playlistName]) {
+    if(!playlists[playlistName].includes(songId)) {
+      playlists[playlistName].push(songId);
+      savePlaylists();
+      alert('Added to ' + playlistName);
+    }
+  }
+}
+
+function removeFromPlaylist(event, songId, playlistName) {
+  event.stopPropagation();
+  playlists[playlistName] = playlists[playlistName].filter(id => id !== songId);
+  savePlaylists();
+  switchView(playlistName); // Re-render
+}
+
+// Call this once on load
+renderPlaylists();
 </script>
   <script>
   if ('serviceWorker' in navigator) {
