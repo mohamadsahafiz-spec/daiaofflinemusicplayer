@@ -148,7 +148,16 @@ input:focus, textarea:focus { border-color: var(--accent); }
 }
 
 /* FIXED PLAYER BAR - SPOTIFY STYLE */
-.player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.95); backdrop-filter: blur(30px); padding:8px 16px; border-top:1px solid var(--border); height:80px; z-index:10; }
+.player-bar { 
+  position:fixed; 
+  bottom:0; left:0; right:0; 
+  background: rgba(18,18,18,0.95); 
+  backdrop-filter: blur(30px); 
+  /* REMOVED height:80px so it automatically fits all buttons! */
+  padding: 10px 16px 16px 16px; 
+  border-top:1px solid var(--border); 
+  z-index:10; 
+}
 .progress { width:100%; height:4px; background:#535353; border-radius:4px; cursor:pointer; position:absolute; top:0; left:0; }
 .progress-bar { height:100%; background:var(--accent); width:0%; border-radius:4px; transition: width 0.1s linear; }
 
@@ -157,7 +166,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  gap: 10px; 
+  gap: 12px; 
   padding-top: 6px; 
 }
 .player-section { display: flex; align-items: center; }
@@ -165,27 +174,24 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .controls-section { flex: 1.5; justify-content: center; gap: 16px; }
 .tools-section { flex: 1; justify-content: flex-end; gap: 12px; }
 
-/* FIX: Prevents text from pushing buttons and adds ellipses */
+/* Truncate text properly so it never pushes buttons */
 .player-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 #nowTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #nowArtist { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* FIX: Prevents cover image from squishing */
-.cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); flex-shrink: 0; }
+/* Hide the ugly browser broken-image frame */
+.cover { 
+  width:48px; height:48px; border-radius:8px; 
+  background:#2a2a2a; 
+  object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+  flex-shrink: 0; 
+  color: transparent; 
+}
 
-/* Custom Circular Play Button - FIX: Prevents squishing */
+/* Custom Circular Play Button */
 .btn-play {
-  background: var(--accent);
-  color: #fff;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: var(--accent); color: #fff; width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;
   box-shadow: 0 4px 10px rgba(124,58,237,0.3);
   flex-shrink: 0; 
 }
@@ -193,32 +199,22 @@ input:focus, textarea:focus { border-color: var(--accent); }
 
 /* Custom Volume Slider */
 input[type="range"].vol-slider {
-  -webkit-appearance: none;
-  width: 80px;
-  height: 4px;
-  background: #535353;
-  border-radius: 4px;
-  outline: none;
-  border: none;
-  padding: 0;
+  -webkit-appearance: none; width: 80px; height: 4px; background: #535353; border-radius: 4px; outline: none; border: none; padding: 0;
 }
 input[type="range"].vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #fff;
-  cursor: pointer;
-  transition: transform 0.1s;
+  -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #fff; cursor: pointer; transition: transform 0.1s;
 }
-input[type="range"].vol-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
+input[type="range"].vol-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-/* Mobile Responsive Adjustments */
-@media (max-width: 600px) {
-  .controls-section { gap: 8px; }
-  .tools-section .vol-slider { width: 50px; }
+/* FIX: True Mobile Responsive View */
+@media (max-width: 650px) {
+  .player-main { gap: 6px; }
+  .info-section { gap: 8px; flex: 1.5; }
+  .controls-section { gap: 6px; flex: 2; justify-content: flex-end; }
+  /* Hides volume and EQ on phones to give the buttons room to breathe */
+  .tools-section { display: none; } 
+  .cover { width: 40px; height: 40px; }
+  .btn-play { width: 38px; height: 38px; }
 }
 
 .player-controls { display:flex; gap:4px; flex-shrink:0; }
