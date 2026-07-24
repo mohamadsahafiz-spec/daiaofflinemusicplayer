@@ -1,4 +1,3 @@
-const CACHE_NAME = 'daia-music-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,7 +5,8 @@ const ASSETS_TO_CACHE = [
   './icon-180.png',
   './icon-192.png',
   './icon-512.png',
-  './splash-screen.png'
+  './splash-screen.png',
+  'https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js'
 ];
 
 // Install event: Caches the assets
