@@ -1,44 +1,47 @@
-const CACHE_NAME = 'daia-v2';
-const FILES_TO_CACHE = [
+const CACHE_NAME = 'daia-music-v1';
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png',      // for loading screen
-  './splash.png',    // for splash
-  './icon-180.png',  // iOS icon
-  './icon-192.png',  // PWA icon
-  './icon-512.png'   // Android big icon
+  './icon-180.png',
+  './icon-192.png',
+  './icon-512.png',
+  './splash-screen.png'
 ];
 
-// Install and cache all files
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(FILES_TO_CACHE);
-    })
-  );
-  self.skipWaiting();
-});
-
-// Serve from cache, fallback to network
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
+// Install event: Caches the assets
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
   );
 });
 
-// Delete old caches
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          return caches.delete(key);
-        }
-      }));
+// Fetch event: Serves cached files if offline
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Return the cached file if found, otherwise fetch from the network
+        return response || fetch(event.request);
+      })
+  );
+});
+
+// Activate event: Cleans up old caches when you update the app
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
     })
   );
-  self.clients.claim();
 });
