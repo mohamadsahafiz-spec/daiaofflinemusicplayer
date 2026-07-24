@@ -10,52 +10,84 @@
 <meta name="apple-mobile-web-app-title" content="Daia">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="apple-touch-startup-image" href="splash-screen.png"> <!-- NEW LINE INSERTED HERE -->
+<link rel="apple-touch-startup-image" href="splash-screen.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
 <style>
+/* --- PREMIUM LOADING SCREEN --- */
 #loading {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   z-index: 9999;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
-#loading.hide { opacity: 0; pointer-events: none; }
+#loading.hide { 
+  opacity: 0; 
+  pointer-events: none; 
+  transform: scale(1.1); 
+}
 
-.loader-heart {
-  width: 100px;
-  height: 90px;
-  position: relative;
-  animation: pulse 1.5s ease-in-out infinite;
-  margin-bottom: 10px;
+.soundwave {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+  margin-bottom: 24px;
 }
-.loader-heart::before,
-.loader-heart::after {
-  content: '';
-  width: 52px;
-  height: 80px;
-  position: absolute;
-  background: linear-gradient(135deg, #ff00ff, #a855f7);
-  border-radius: 50px 50px 0 0;
-  box-shadow: 0 0 30px #a855f7, 0 0 60px #ec4899;
+.soundwave span {
+  display: block;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, #a855f7, #7c3aed);
+  border-radius: 4px;
+  animation: wave 1.2s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
 }
-.loader-heart::before { left: 50px; transform: rotate(-45deg); transform-origin: 0 100%; }
-.loader-heart::after { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
+.soundwave span:nth-child(1) { animation-delay: -1.2s; height: 40%; }
+.soundwave span:nth-child(2) { animation-delay: -1.0s; height: 80%; }
+.soundwave span:nth-child(3) { animation-delay: -0.8s; height: 100%; }
+.soundwave span:nth-child(4) { animation-delay: -0.6s; height: 80%; }
+.soundwave span:nth-child(5) { animation-delay: -0.4s; height: 40%; }
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
 
 .loading-text {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  background: linear-gradient(90deg, #7c3aed, #fff, #a855f7, #7c3aed); 
+  background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: 3px;
-  animation: pulse 2s infinite;
+  letter-spacing: 8px;
+  margin-left: 8px; 
+  animation: shimmer 3s linear infinite;
 }
-  .playlist-tab {
+@keyframes shimmer {
+  to { background-position: 300% center; }
+}
+
+.loading-subtitle {
+  margin-top: 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--muted);
+  animation: fadePulse 2s ease-in-out infinite;
+}
+@keyframes fadePulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+/* --- END LOADING SCREEN --- */
+
+.playlist-tab {
   padding: 8px 16px;
   background: rgba(255,255,255,0.1);
   border-radius: 500px;
@@ -70,48 +102,37 @@
   background: transparent; color: var(--accent); padding: 4px 8px; border: 1px solid var(--accent); font-size:12px;
 }
 
-.pulse {
-  width: 220px;
-  height: 4px;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  border-radius: 2px;
-  margin-top: 20px;
-  animation: heartbeat-bar 1.2s ease-in-out infinite;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root {
+  --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424;
+  --gradient: linear-gradient(180deg, rgba(124,58,237,0.15) 0%, transparent 100%);
 }
-@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-@keyframes heartbeat-bar { 0%, 100% { transform: scaleX(0.3); opacity: 0.5; } 50% { transform: scaleX(1); opacity: 1; } }
-
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-  :root {
-    --bg:#0a0a0a; --card:#121212; --card-hover:#1f1f1f; --accent:#7c3aed; --text:#fff; --muted:#a7a7a7; --border:#242424;
-    --gradient: linear-gradient(180deg, rgba(124,58,237,0.15) 0%, transparent 100%);
-  }
-  [data-theme="light"] {
-    --bg:#f8f8f8; --card:#ffffff; --card-hover:#f0f0f0; --text:#000; --muted:#6a6a6a; --border:#e0e0e0;
-    --gradient: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
-  }
-    * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Inter', system-ui; background: var(--bg); color: var(--text); margin:0; padding-bottom:90px; background-image: var(--gradient); background-attachment: fixed; transition: all 0.3s ease; overflow-x:hidden; }
+[data-theme="light"] {
+  --bg:#f8f8f8; --card:#ffffff; --card-hover:#f0f0f0; --text:#000; --muted:#6a6a6a; --border:#e0e0e0;
+  --gradient: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', system-ui; background: var(--bg); color: var(--text); margin:0; padding-bottom:90px; background-image: var(--gradient); background-attachment: fixed; transition: all 0.3s ease; overflow-x:hidden; }
 .container { max-width: 1100px; margin: auto; padding: 24px; }
 
-  header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.4); }
-  [data-theme="light"] header { background: rgba(255,255,255,0.6); }
-  h1 { font-size: 28px; font-weight:900; display:flex; align-items:center; gap:10px; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: logoPulse 3s infinite; }
-  @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top:0; z-index:5; padding:16px 24px; margin:-24px -24px 16px -24px; background: rgba(0,0,0,0.4); }
+[data-theme="light"] header { background: rgba(255,255,255,0.6); }
+h1 { font-size: 28px; font-weight:900; display:flex; align-items:center; gap:10px; background: linear-gradient(90deg, #7c3aed, #a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: logoPulse 3s infinite; }
+@keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
 
-  button { background: var(--accent); border:none; color:#fff; padding:12px 24px; border-radius:500px; cursor:pointer; font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; transition: all 0.2s; }
-  button:hover { transform: scale(1.04); background: #8b5cf6; box-shadow:0 0 20px rgba(124,58,237,0.4); }
-  button.ghost { background: rgba(255,255,255,0.1); color:var(--text); border:1px solid var(--border); backdrop-filter: blur(10px); }
-  button.icon { background:none; padding:10px; color:var(--muted); }
-  button.icon:hover { color:var(--text); transform: scale(1.1); }
-  button.icon.active { color:var(--accent); }
+button { background: var(--accent); border:none; color:#fff; padding:12px 24px; border-radius:500px; cursor:pointer; font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; transition: all 0.2s; }
+button:hover { transform: scale(1.04); background: #8b5cf6; box-shadow:0 0 20px rgba(124,58,237,0.4); }
+button.ghost { background: rgba(255,255,255,0.1); color:var(--text); border:1px solid var(--border); backdrop-filter: blur(10px); }
+button.icon { background:none; padding:10px; color:var(--muted); }
+button.icon:hover { color:var(--text); transform: scale(1.1); }
+button.icon.active { color:var(--accent); }
 
 .card { background: rgba(18,18,18,0.6); backdrop-filter: blur(20px); padding:20px; border-radius:16px; margin:20px 0; border:1px solid var(--border); transition: all 0.3s; animation: slideUp 0.5s ease; }
-  @keyframes slideUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
 .card:hover { background: rgba(31,31,31,0.8); transform: translateY(-2px); }
 
-  input, select, textarea { padding:14px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--text); font-size:14px; outline:none; width:100%; }
-  input:focus, textarea:focus { border-color: var(--accent); }
+input, select, textarea { padding:14px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--text); font-size:14px; outline:none; width:100%; }
+input:focus, textarea:focus { border-color: var(--accent); }
 
 .song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; height:64px; transition: all 0.2s; }
 .song:hover { background:var(--card-hover); transform: translateX(8px); }
@@ -185,7 +206,7 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
 
 #nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.player-controls { display:flex; gap:4px; flex-shrink:0; } /* FIX: buttons don't wrap */
+.player-controls { display:flex; gap:4px; flex-shrink:0; }
 
 .lyrics-box { max-height:200px; overflow-y:auto; font-size:14px; line-height:1.8; text-align:center; color:var(--muted); margin-top:12px; }
 .lyrics-line.active { color:var(--accent); font-weight:700; font-size:16px; }
@@ -194,9 +215,11 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
 <body>
 
 <div id="loading">
-  <div class="loader-heart"></div>
+  <div class="soundwave">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
   <div class="loading-text">DAIA</div>
-  <div class="pulse"></div>
+  <div class="loading-subtitle">getting your music ready...</div>
 </div>
 
 <div class="container">
@@ -233,7 +256,7 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
     <button onclick="saveLyrics()" style="margin-top:8px">Save Lyrics</button>
   </div>
 </div>
-<!-- PLAYLIST & EQ PANELS (Add right above the player-bar) -->
+
 <div class="card" id="playlistCard">
   <div style="display:flex; justify-content:space-between; align-items:center">
     <h3>Playlists</h3>
@@ -328,7 +351,6 @@ document.getElementById('fileInput').onchange = (e) => {
 
 function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
 
-// Renders the main "All Music" library
 function renderSongs(filter='') {
   const filtered = songs.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
   document.getElementById('songList').innerHTML = filtered.map(s =>
@@ -356,12 +378,10 @@ async function playSong(i) {
   document.getElementById('playBtn').innerHTML = svgPause;
   loadLyrics(song.id);
   
-  // Triggers the phone lock screen controls!
   updateMediaSession(song); 
 
   document.getElementById('search').value = ''; 
   
-  // Re-renders the correct view to show the active playing song
   if (currentView === 'All Music') {
       renderSongs(); 
   } else {
@@ -383,7 +403,6 @@ function togglePlay() {
   document.getElementById('playBtn').innerHTML = audio.paused ? svgPlay : svgPause; 
 }
 
-// TIMELINE & FORMATTING
 function formatTime(seconds) {
   if (!seconds || isNaN(seconds)) return '0:00';
   const m = Math.floor(seconds / 60);
@@ -404,7 +423,6 @@ function seek(e) {
   audio.currentTime = ((e.clientX - rect.left)/rect.width)*audio.duration; 
 }
 
-// LYRICS LOGIC
 function parseLRC(text) {
   return text.split('\n').map(line=>{
     const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
@@ -429,7 +447,6 @@ function updateLyrics() {
   if(line) document.getElementById('lyrics').innerHTML = lyricsData.map(l=>`<div class="${l===line?'lyrics-line active':''}">${l.text}</div>`).join('');
 }
 
-// UTILS
 function setSleepTimer(min) {
   clearTimeout(sleepTimerId);
   if(min>0) sleepTimerId = setTimeout(()=>{ audio.pause(); alert('Sleep timer ended') }, min*60000);
@@ -446,15 +463,12 @@ window.addEventListener('load', () => {
   }, 1500);
 });
 
-// SHUFFLE & REPEAT LOGIC
 let isShuffle = false; let isRepeat = false;
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffleBtn').classList.toggle('active', isShuffle); }
 function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeatBtn').classList.toggle('active', isRepeat); }
 
-// VOLUME CONTROL
 function changeVolume(val) { audio.volume = val; }
 
-// LOCK SCREEN / BACKGROUND CONTROLS (Media Session API)
 function updateMediaSession(song) {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -468,7 +482,6 @@ function updateMediaSession(song) {
   }
 }
 
-// EQUALIZER (Web Audio API)
 let audioCtx, track, bass, mid, treble;
 function initEQ() {
   if(audioCtx) return;
@@ -495,7 +508,6 @@ function updateEQ(band, value) {
   if(band === 'treble') treble.gain.value = value;
 }
 
-// PLAYLISTS LOGIC
 let playlists = JSON.parse(localStorage.getItem('daia_playlists')) || { "Favorites": [] };
 let currentView = 'All Music';
 
@@ -558,9 +570,8 @@ function removeFromPlaylist(event, songId, playlistName) {
   switchView(playlistName); 
 }
 
-// Call on startup
 renderPlaylists();
-</script> <!-- THIS WAS MISSING! -->
+</script>
 
 <script>
   if ('serviceWorker' in navigator) {
