@@ -206,15 +206,19 @@ document.getElementById('fileInput').onchange = (e) => {
 
 function renderSongs(filter='') {
   const filtered = songs.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
-  document.getElementById('songList').innerHTML = filtered.map((s,i) =>
-    `<div class="song ${currentIndex===i?'active':''}" onclick="playSong(${i})">
+  document.getElementById('songList').innerHTML = filtered.map(s =>
+    `<div class="song ${currentIndex !== -1 && songs[currentIndex].id === s.id ? 'active' : ''}" onclick="playSongById('${s.id}')">
       <img class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
       <div><div style="font-weight:600">${s.name}</div><div style="font-size:12px; color:var(--muted)">${s.artist}</div></div>
     </div>`
   ).join('') || 'No songs found';
 }
 
-function revokeUrl() { if(currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } }
+// New helper function to look up the real index
+function playSongById(id) {
+  const index = songs.findIndex(s => s.id === id);
+  if (index !== -1) playSong(index);
+}
 
 async function playSong(i) {
   revokeUrl();
@@ -226,19 +230,25 @@ async function playSong(i) {
   document.getElementById('nowTitle').innerText = song.name;
   document.getElementById('playBtn').innerText = '⏸';
   loadLyrics(song.id);
-  renderSongs();
+  // Re-render to clear the search filter and show active state correctly
+  document.getElementById('search').value = ''; 
+  renderSongs(); 
 }
 
 function prevSong() { if(songs.length===0) return; playSong((currentIndex-1+songs.length)%songs.length); }
 function nextSong() { if(songs.length===0) return; playSong((currentIndex+1)%songs.length); }
 function togglePlay() { audio.paused? audio.play() : audio.pause(); document.getElementById('playBtn').innerText = audio.paused? '▶' : '⏸'; }
+  audio.onended = nextSong;
 
 audio.ontimeupdate = () => {
   if(!audio.duration) return;
   document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + '%';
   updateLyrics();
 }
-function seek(e) { const rect = e.target.getBoundingClientRect(); audio.currentTime = ((e.clientX - rect.left)/rect.width)*audio.duration; }
+function seek(e) { 
+  const rect = e.currentTarget.getBoundingClientRect(); 
+  audio.currentTime = ((e.clientX - rect.left)/rect.width)*audio.duration; 
+}
 
 function parseLRC(text) {
   return text.split('\n').map(line=>{
