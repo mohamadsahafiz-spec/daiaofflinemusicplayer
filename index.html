@@ -137,7 +137,15 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .song { display:flex; align-items:center; gap:16px; padding:10px; border-radius:8px; cursor:pointer; height:64px; transition: all 0.2s; }
 .song:hover { background:var(--card-hover); transform: translateX(8px); }
 .song.active { background: rgba(124,58,237,0.2); box-shadow:0 0 15px rgba(124,58,237,0.3); }
-.cover { width:48px; height:48px; border-radius:8px; background:#333; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.cover { 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 8px; 
+  background: #333; 
+  object-fit: cover; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+  flex-shrink: 0; /* Prevents the cover from being squished */
+}
 
 /* FIXED PLAYER BAR - SPOTIFY STYLE */
 .player-bar { position:fixed; bottom:0; left:0; right:0; background: rgba(18,18,18,0.95); backdrop-filter: blur(30px); padding:8px 16px; border-top:1px solid var(--border); height:80px; z-index:10; }
@@ -171,6 +179,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 4px 10px rgba(124,58,237,0.3);
+  flex-shrink: 0; /* Prevents the circle from turning into an oval */
 }
 .btn-play:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(124,58,237,0.5); }
 
@@ -203,7 +212,8 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
   .controls-section { gap: 8px; }
   .tools-section .vol-slider { width: 50px; }
 }
-
+/* ADD THIS MISSING LINE BACK (Put it right above #nowArtist) */
+#nowTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #nowArtist { font-size:12px; color:var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .player-controls { display:flex; gap:4px; flex-shrink:0; }
@@ -286,7 +296,7 @@ input[type="range"].vol-slider::-webkit-slider-thumb:hover {
     
     <!-- LEFT: COVER & INFO -->
     <div class="player-section info-section">
-      <img id="nowCover" class="cover" src="">
+      <img id="nowCover" class="cover" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNTM1MzUzIiB2aWV3Qm94PSIwIDAgMjQiPjxwYXRoIGQ9Ik0xMiAzVjEzbC05LTMuNSIvPjwvc3ZnPg==">
       <div class="player-info">
         <div id="nowTitle">No song playing</div>
         <div id="nowArtist">Add music to start</div>
