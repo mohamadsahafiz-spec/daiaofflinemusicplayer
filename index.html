@@ -479,7 +479,9 @@ function removeFromPlaylist(event, songId, playlistName) {
 
 // Call on startup
 renderPlaylists();
-  <script>
+</script> <!-- THIS WAS MISSING! -->
+
+<script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
